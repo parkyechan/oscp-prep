@@ -295,17 +295,9 @@ ________________________________________________
  :: Filter           : Response status: 403
 ________________________________________________
 
-#.php                   [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 88ms]
-# Copyright 2007 James Fisher [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 89ms]
-#                       [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 90ms]
-# Copyright 2007 James Fisher.php [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 101ms]
-#                       [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 103ms]
-# Attribution-Share Alike 3.0 License. To view a copy of this  [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 104ms]
-                        [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 106ms]
 images                  [Status: 301, Size: 185, Words: 8, Lines: 7, Duration: 393ms]
 css                     [Status: 301, Size: 182, Words: 8, Lines: 7, Duration: 82ms]
 js                      [Status: 301, Size: 181, Words: 8, Lines: 7, Duration: 83ms]
-                        [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 83ms]
 external%5cx-news       [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 85ms]
 external%5cx-news.php   [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94ms]
 :: Progress: [415286/415286] :: Job [1/1] :: 2409 req/sec :: Duration: [0:03:00] :: Errors: 0 ::
@@ -334,6 +326,7 @@ external%5cx-news.php   [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94m
 
 # 2. Initial Access
 ## 2.1. Port 4848
+### 2.1.1. Admin login
 
 4848 번 포트로 접근하면 `admin:admin` 등의 크리덴셜이 먹히지 않아서 구글링을 통해 확인하려고 했다. 그 중에 `admin` 으로 아이디를 하되, 비밀번호를 공백으로 두면 된다고 했다.
 
@@ -346,4 +339,48 @@ external%5cx-news.php   [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94m
 비밀번호가 그냥 틀렸을 때는 아래와 같이 나온다. 
 
 ![](../images/Windows-01.%20Fish-6.png)
+
+### 2.1.2. 
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# searchsploit glassfish
+------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                               |  Path
+------------------------------------------------------------------------------------------------------------- ---------------------------------
+GlassFish Application Server - '/Applications/lifecycleModulesNew.jsf' Multiple Cross-Site Scripting Vulnera | multiple/remote/31927.txt
+GlassFish Application Server - '/resourceNode/customResourceNew.jsf' Multiple Cross-Site Scripting Vulnerabi | multiple/remote/31922.txt
+GlassFish Application Server - '/resourceNode/externalResourceNew.jsf' Multiple Cross-Site Scripting Vulnera | multiple/remote/31923.txt
+GlassFish Application Server - '/resourceNode/jdbcConnectionPoolNew1.jsf' Multiple Cross-Site Scripting Vuln | multiple/remote/31928.txt
+GlassFish Application Server - '/resourceNode/jdbcResourceNew.jsf' Multiple Cross-Site Scripting Vulnerabili | multiple/remote/31926.txt
+GlassFish Application Server - '/resourceNode/jmsConnectionNew.jsf' Multiple Cross-Site Scripting Vulnerabil | multiple/remote/31925.txt
+GlassFish Application Server - '/resourceNode/jmsDestinationNew.jsf' Multiple Cross-Site Scripting Vulnerabi | multiple/remote/31924.txt
+GlassFish Enterprise Server 2.1 - Admin Console '/configuration/auditModuleEdit.jsf?name' Cross-Site Scripti | multiple/remote/32980.txt
+GlassFish Enterprise Server 2.1 - Admin Console '/resourceNode/jdbcResourceEdit.jsf?name' Cross-Site Scripti | multiple/remote/32981.txt
+GlassFish Enterprise Server 2.1 - Admin Console /applications/applications.jsf URI Cross-Site Scripting      | multiple/remote/32971.txt
+GlassFish Enterprise Server 2.1 - Admin Console /configuration/configuration.jsf URI Cross-Site Scripting    | multiple/remote/32974.txt
+GlassFish Enterprise Server 2.1 - Admin Console /customMBeans/customMBeans.jsf URI Cross-Site Scripting      | multiple/remote/32975.txt
+GlassFish Enterprise Server 2.1 - Admin Console /resourceNode/resources.jsf URI Cross-Site Scripting         | multiple/remote/32977.txt
+GlassFish Enterprise Server 2.1 - Admin Console /sysnet/registration.jsf URI Cross-Site Scripting            | multiple/remote/32978.txt
+GlassFish Enterprise Server 2.1 - Admin Console /webService/webServicesGeneral.jsf URI Cross-Site Scripting  | multiple/remote/32979.txt
+GlassFish Server - Arbitrary File Read                                                                       | java/webapps/39241.py
+Glassfish Server - Unquoted Service Path Privilege Escalation                                                | windows/local/40438.txt
+JSFTemplating / Mojarra Scales / GlassFish - File Disclosure                                                 | asp/webapps/9562.txt
+Oracle Glassfish OSE 4.1 - Path Traversal (Metasploit)                                                       | linux/webapps/45198.rb
+Oracle GlassFish Server - Administration Console Authentication Bypass                                       | windows/webapps/17276.txt
+Oracle GlassFish Server - REST Cross-Site Request Forgery                                                    | windows/webapps/18766.txt
+Oracle GlassFish Server 2.1.1/3.0.1 - Multiple Subcomponent Resource Identifier Traversal Arbitrary File Acc | multiple/remote/38802.txt
+Oracle GlassFish Server 3.1.1 (build 12) - Multiple Cross-Site Scripting Vulnerabilities                     | windows/webapps/18764.txt
+Oracle GlassFish Server 4.1 - Directory Traversal                                                            | multiple/webapps/39441.txt
+Oracle GlassFish Server Open Source Edition 4.1 - Path Traversal (Metasploit)                                | windows/webapps/45196.rb
+Oracle Sun GlassFish Enterprise Server - Persistent Cross-Site Scripting                                     | jsp/webapps/17551.txt
+Sun GlassFish 2.1 - 'name' Cross-Site Scripting                                                              | multiple/remote/31901.txt
+Sun/Oracle GlassFish Server - (Authenticated) Code Execution (Metasploit)                                    | jsp/webapps/17615.rb
+------------------------------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+```
+
+
+![](../images/Windows-01.%20Fish-7.png)
+
 
