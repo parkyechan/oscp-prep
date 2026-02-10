@@ -267,10 +267,54 @@ OS and Service detection performed. Please report any incorrect results at https
 Nmap done: 1 IP address (1 host up) scanned in 179.68 seconds
 ```
 
+### 1.1.2. ffuf
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# ffuf -u http://$IP:8080/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -t 200 -e .php -fc 403
+
+        /'___\  /'___\           / ___\
+       /\ \__/ /\ \__/  __  __  /\ \__/
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/
+         \ \_\   \ \_\  \ \____/  \ \_\
+          \/_/    \/_/   \/___/    \/_/
+
+       v2.1.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://192.168.168.168:8080/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt
+ :: Extensions       : .php
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 200
+ :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+ :: Filter           : Response status: 403
+________________________________________________
+
+#.php                   [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 88ms]
+# Copyright 2007 James Fisher [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 89ms]
+#                       [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 90ms]
+# Copyright 2007 James Fisher.php [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 101ms]
+#                       [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 103ms]
+# Attribution-Share Alike 3.0 License. To view a copy of this  [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 104ms]
+                        [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 106ms]
+images                  [Status: 301, Size: 185, Words: 8, Lines: 7, Duration: 393ms]
+css                     [Status: 301, Size: 182, Words: 8, Lines: 7, Duration: 82ms]
+js                      [Status: 301, Size: 181, Words: 8, Lines: 7, Duration: 83ms]
+                        [Status: 200, Size: 12113, Words: 4670, Lines: 285, Duration: 83ms]
+external%5cx-news       [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 85ms]
+external%5cx-news.php   [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94ms]
+:: Progress: [415286/415286] :: Job [1/1] :: 2409 req/sec :: Duration: [0:03:00] :: Errors: 0 ::
+```
+
 ## 1.2. Port Discovery
 ### 1.2.1. Port 4848
 
-`4848` 번 포트에 `http` 서비스가 제공되고 있으므로 확인해 봤고 
+`4848` 번 포트에 `http` 서비스가 제공되고 있으므로 확인해 봤다. 
 
 ![](../images/Windows-01.%20Fish.png)
 
@@ -283,4 +327,23 @@ Nmap done: 1 IP address (1 host up) scanned in 179.68 seconds
 ### 1.2.3. Port 7676
 
 ![](../images/Windows-01.%20Fish-2.png)
+
+### 1.2.4. Port 8080
+
+![](../images/Windows-01.%20Fish-3.png)
+
+# 2. Initial Access
+## 2.1. Port 4848
+
+4848 번 포트로 접근하면 `admin:admin` 등의 크리덴셜이 먹히지 않아서 구글링을 통해 확인하려고 했다. 그 중에 `admin` 으로 아이디를 하되, 비밀번호를 공백으로 두면 된다고 했다.
+
+![](../images/Windows-01.%20Fish-4.png)
+
+똑같이 안 되기는 했지만, `Admin` 으로 접근은 `DAS` 를 통해 원격으로 가능하다고 나오는 점이 비밀번호가 틀렸을 때랑은 다르게 나온다는 점이다. 
+
+![](../images/Windows-01.%20Fish-5.png)
+
+비밀번호가 그냥 틀렸을 때는 아래와 같이 나온다. 
+
+![](../images/Windows-01.%20Fish-6.png)
 
