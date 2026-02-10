@@ -272,15 +272,15 @@ Nmap done: 1 IP address (1 host up) scanned in 179.68 seconds
 
 `4848` 번 포트에 `http` 서비스가 제공되고 있으므로 확인해 봤고 
 
-![[Windows-01. Fish.png]]
+![](../images/Windows-01.%20Fish.png)
 
 ### 1.2.2. Port 6060
 
 `6060` 번 포트에는 `SynaMan` 5.1 버전이 돌아가고 있다.
 
-![[Windows-01. Fish-1.png]]
+![](../images/Windows-01.%20Fish-1.png)
 
 ### 1.2.3. Port 7676
 
-![[Windows-01. Fish-2.png]]
+![](../images/Windows-01.%20Fish-2.png)
 
