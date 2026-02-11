@@ -647,7 +647,7 @@ Entries changed: 920
 DONE
 ```
 
-그러면 `C:\Windows` 에 대해 확인했을 때 `NT AUTHORITY\SYSTEM:(M)` 와 같이 나오는 거를 볼 수 있다. `System` 폴더에 대해서 `(M)` 이 수정 가능하다는 거다. 
+그러면 `C:\Windows` 에 대해 확인했을 때 `BUILTIN\Users:(M)` 와 같이 나오는 거를 볼 수 있다. `System` 폴더에 대해서 `(M)` 이 수정 가능하다는 거다. 
 
 ```bash
 C:\Users\svc_mssql\Desktop>icacls C:\Windows
